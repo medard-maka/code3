@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ESP32 Web Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f7f7f7;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .sensor-data {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center; /* Nouvelle propriété ajoutée */
+      margin-top: 20px;
+    }
+
+    .sensor {
+      width: calc(50% - 10px);
+      margin-bottom: 20px;
+      text-align: center;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .sensor-label {
+      font-weight: bold;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .button.on {
+      background-color: #2ecc71;
+      color: #fff;
+    }
+
+    .button.off {
+      background-color: #e74c3c;
+      color: #fff;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .sensor {
+        width: 100%;
+      }
+    }
+  </style>
+  <script>
+    function refreshData() {
+      $.getJSON("/sensors", function(data) {
+        $("#temperature").text(data.temperature);
+        $("#humidity").text(data.humidity);
+        $("#co2").text(data.co2);
+        $("#flame").text(data.flame);
+      });
+    }
+
+    function fanOn() {
+      $.get("/fan/on", function(data) {
+        $("#fanStatus").text(data);
+      });
+    }
+
+    function fanOff() {
+      $.get("/fan/off", function(data) {
+        $("#fanStatus").text(data);
+      });
+    }
+
+    function pumpOn() {
+      $.get("/pump/on", function(data) {
+        $("#pumpStatus").text(data);
+      });
+    }
+
+    function pumpOff() {
+      $.get("/pump/off", function(data) {
+        $("#pumpStatus").text(data);
+      });
+    }
+
+    $(document).ready(function() {
+      refreshData();
+      setInterval(refreshData, 2000);
+    });
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Ma Maison</h1>
+
+    <div class="sensor-data">
+      <div class="sensor">
+        <div class="sensor-label">Température</div>
+        <div id="temperature">--</div>
+      </div>
+      <div class="sensor">
+        <div class="sensor-label">Humidité</div>
+        <div id="humidity">--</div>
+      </div>
+      <div class="sensor">
+        <div class="sensor-label">CO2,fumé</div>
+        <div id="co2">--</div>
+      </div>
+      <div class="sensor">
+        <div class="sensor-label">Flamme</div>
+        <div id="flame">--</div>
+      </div>
+    </div>
+
+    <div class="status">
+      <div class="button on" onclick="fanOn()">Fan On</div>
+      <div class="button off" onclick="fanOff()">Fan Off</div>
+      <div class="button on" onclick="pumpOn()">Pump On</div>
+      <div class="button off" onclick="pumpOff()">Pump Off</div>
+    </div>
+  </div</body>
+
+</html>
